@@ -13,10 +13,9 @@ class SolverWindow(ctk.CTkToplevel):
         super().__init__(parent)
         self.parent = parent
         self.title('Решение примеров')
-        self.geometry('750x500')
+        self.geometry('750x550')  # 🔥 Увеличил высоту для таймера
         self.resizable(False, False)
 
-        # Фокус на окне и модальность
         self.focus_set()
         self.grab_set()
 
@@ -26,7 +25,7 @@ class SolverWindow(ctk.CTkToplevel):
         self.answers = []
         self.answers_shown = False
 
-        # Переменные таймера
+        # 🔥 Переменные таймера
         self.start_time = None
         self.timer_running = False
         self.timer_job = None
@@ -34,10 +33,9 @@ class SolverWindow(ctk.CTkToplevel):
         self._load_examples()
         self._create_widgets()
 
-        # Запускаем таймер после создания виджетов
+        # 🔥 Запускаем таймер после создания виджетов
         self._start_timer()
 
-        # Обработка закрытия окна
         self.protocol('WM_DELETE_WINDOW', self._on_close)
 
     def _load_examples(self):
@@ -48,8 +46,6 @@ class SolverWindow(ctk.CTkToplevel):
                     for line in f:
                         line = line.strip()
                         if line:
-                            # Убираем номер и пробелы:
-                            # '1) 2 + 2 =  _____' -> '2 + 2 ='
                             match = re.match(r'\d+\)\s*(.+)', line)
                             if match:
                                 example = match.group(1).replace(
@@ -62,7 +58,6 @@ class SolverWindow(ctk.CTkToplevel):
                     'Сначала сгенерируйте примеры.'
                 )
 
-            # Читаем ответы
             if os.path.exists('answers.txt'):
                 with open('answers.txt', 'r', encoding='utf-8') as f:
                     for line in f:
@@ -123,8 +118,7 @@ class SolverWindow(ctk.CTkToplevel):
         ctk.CTkLabel(
             header_frame, text='Ваш ответ', width=100
         ).pack(side='left', padx=(0, 10))
-
-        # Скрытый заголовок для столбца правильных ответов
+        
         self.lbl_answer_header = ctk.CTkLabel(
             header_frame,
             text='Правильный ответ',
@@ -133,7 +127,7 @@ class SolverWindow(ctk.CTkToplevel):
             corner_radius=5
         )
         self.lbl_answer_header.pack(side='left', padx=(0, 10))
-        self.lbl_answer_header.pack_forget()  # Скрыт по умолчанию
+        self.lbl_answer_header.pack_forget()
 
         # Поля с примерами
         for i, example in enumerate(self.examples):
@@ -157,7 +151,6 @@ class SolverWindow(ctk.CTkToplevel):
             entry.pack(side='left', padx=(0, 10))
             self.entry_fields.append(entry)
 
-            # Метка для правильного ответа (скрыта по умолчанию)
             lbl_answer = ctk.CTkLabel(
                 row_frame,
                 text=self.answers[i],
@@ -167,25 +160,23 @@ class SolverWindow(ctk.CTkToplevel):
                 text_color='white'
             )
             lbl_answer.pack(side='left', padx=(0, 10))
-            lbl_answer.pack_forget()  # Скрыта по умолчанию
+            lbl_answer.pack_forget()
             self.answer_labels.append(lbl_answer)
 
-        # Нижняя панель с кнопками
+        # 🔥 Нижняя панель с кнопками
         self.bottom_frame = ctk.CTkFrame(self, height=180)
         self.bottom_frame.pack(fill='x', padx=10, pady=(0, 10))
         self.bottom_frame.pack_propagate(False)
 
-        # Кнопка "Проверить ответы" (видна сразу)
         self.btn_check = ctk.CTkButton(
             self.bottom_frame,
-            text='Проверить ответы',
+            text='✅ Проверить ответы',
             command=self._check_answers,
             height=40,
             fg_color='blue'
         )
         self.btn_check.pack(pady=(10, 5), padx=10, fill='x')
 
-        # Кнопка "Закрыть" (видна сразу)
         self.btn_close = ctk.CTkButton(
             self.bottom_frame,
             text='❌ Закрыть',
@@ -195,7 +186,6 @@ class SolverWindow(ctk.CTkToplevel):
         )
         self.btn_close.pack(pady=(5, 5), padx=10, fill='x')
 
-        # Кнопка "Показать ответы" (скрыта по умолчанию)
         self.btn_show_answers = ctk.CTkButton(
             self.bottom_frame,
             text='👁️ Посмотреть ответы',
@@ -204,13 +194,12 @@ class SolverWindow(ctk.CTkToplevel):
             fg_color='orange'
         )
 
-        # Метка результата (скрыта до проверки)
         self.lbl_result = ctk.CTkLabel(
             self.bottom_frame, text='', text_color='gray'
         )
 
-        # Панель таймера (под панелью кнопок)
-        self.timer_frame = ctk.CTkFrame(self, height=80, fg_color='gray20')
+        # 🔥 Панель таймера (под панелью кнопок)
+        self.timer_frame = ctk.CTkFrame(self, height=60, fg_color='gray20')
         self.timer_frame.pack(fill='x', padx=10, pady=(0, 10))
         self.timer_frame.pack_propagate(False)
 
@@ -243,7 +232,7 @@ class SolverWindow(ctk.CTkToplevel):
             minutes = int(elapsed // 60)
             seconds = int(elapsed % 60)
             self.lbl_timer.configure(text=f'{minutes:02d}:{seconds:02d}')
-            # Планируем следующее обновление через 1000 мс (1 секунда)
+            # 🔥 Планируем следующее обновление через 1000 мс (1 секунда)
             self.timer_job = self.after(1000, self._update_timer)
 
     def _stop_timer(self):
@@ -262,8 +251,10 @@ class SolverWindow(ctk.CTkToplevel):
 
     def _check_answers(self):
         """Проверяет ответы и показывает статистику"""
+        # 🔥 Останавливаем таймер при проверке
         self._stop_timer()
         final_time = self._get_elapsed_time()
+
         correct = 0
         incorrect = 0
         total = len(self.examples)
@@ -272,15 +263,13 @@ class SolverWindow(ctk.CTkToplevel):
             user_answer = entry.get().strip()
             correct_answer = self.answers[i] if i < len(self.answers) else ''
 
-            # Сравниваем ответы (с учётом возможных форматов)
             try:
                 user_val = float(user_answer.replace(',', '.'))
                 correct_val = float(correct_answer.replace(',', '.'))
-                # Округляем оба значения до 2 знаков перед сравнением
+                
                 user_val = round(user_val, 2)
                 correct_val = round(correct_val, 2)
 
-                # Ответ с погрешностью в 0.001 считается верным
                 if abs(user_val - correct_val) < 0.001:
                     correct += 1
                     entry.configure(border_color='green')
@@ -291,20 +280,24 @@ class SolverWindow(ctk.CTkToplevel):
                 incorrect += 1
                 entry.configure(border_color='red')
 
-        # Вычисления процента точности
         percentage = (correct / total * 100) if total > 0 else 0
-
-        # Сначала pack'им кнопку "Посмотреть ответы"
+        
         self.btn_show_answers.pack(pady=(5, 5), padx=10, fill='x')
 
-        # Блокируем кнопку проверки после проверки
+        # 🔥 Добавляем время в статистику
+        self.lbl_result.configure(
+            text=(
+                f'✅ Правильно: {correct} | ❌ Неправильно: {incorrect} | '
+                f'📊 Точность: {percentage:.1f}% | ⏱️ Время: {final_time}'),
+            text_color='green' if percentage >= 50 else 'red'
+        )
+
         self.btn_check.configure(state='disabled', text='Проверено')
 
-        # Показываем сообщение
         messagebox.showinfo(
             'Результат',
             f'Вы решили {correct} из {total} примеров.\n'
-            f'Точность: {percentage:.1f}% '
+            f'Точность: {percentage:.1f}%\n'
             f'Время решения: {final_time}'
         )
 
@@ -325,11 +318,11 @@ class SolverWindow(ctk.CTkToplevel):
 
     def _on_close(self):
         """Закрытие окна"""
-        self._stop_timer()
+        self._stop_timer()  # 🔥 Останавливаем таймер при закрытии
         self.destroy()
 
 
 def open_solver(parent):
     """Функция для открытия окна решения из главного окна"""
     solver = SolverWindow(parent)
-    solver.wait_window()  # Ждём закрытия окна решения
+    solver.wait_window()

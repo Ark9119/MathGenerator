@@ -19,18 +19,19 @@ def ansver_for_example(example):
     Поддерживает: +, -, *, /
     """
     try:
-        # 🔥 Очищаем пример от лишних символов
+        # Очищаем пример от лишних символов
         clean_example = example.replace('=', '').strip()
-        # 🔥 Разрешаем только цифры, операторы и пробелы
+        # Разрешаем только цифры, операторы и пробелы
         if not re.match(r'^[\d\s\+\-\*\/\.]+$', clean_example):
-            raise ValueError("Недопустимые символы в примере")
-        # 🔥 Безопасное вычисление (так как мы контролируем входные данные)
+            raise ValueError('Недопустимые символы в примере')
         result = eval(clean_example)
+        # Округляем до 2 знаков после запятой
+        result = round(result, 2)
         return result
     except ZeroDivisionError:
-        return "Ошибка: деление на ноль"
+        return 'Ошибка: деление на ноль'
     except Exception as e:
-        return f"Ошибка: {e}"
+        return f'Ошибка: {e}'
 
 
 def check_rules_for_example(answer, rules):
@@ -47,7 +48,7 @@ def check_rules_for_example(answer, rules):
                 return False
         elif rule == 'not_float':
             # Ответ должен быть целым числом
-            if isinstance(answer, float) and not answer.is_integer():
+            if answer != int(answer):
                 return False
         elif rule == 'not_zero':
             # Ответ не должен быть нулём
@@ -69,9 +70,9 @@ def generate_example(
     Перегенерирует пока не найдётся подходящий пример
     """
     for attempt in range(max_attempts):
-        # 🔥 Генерируем числа прямо здесь
+        # Генерируем числа
         nums = generate_num(number_of_numbers, min_number, max_number)
-        # 🔥 Создаём строку примера
+        # Создаём строку примера
         if len(signs) == 1:
             # Один знак для всех операций
             exampl = f' {signs[0]} '.join(nums)
@@ -81,14 +82,14 @@ def generate_example(
             for i in range(len(nums) - 1):
                 sign = random.choice(signs)
                 exampl += f' {sign} {nums[i + 1]}'
-        # 🔥 Вычисляем ответ
+        # Вычисляем ответ
         answer = ansver_for_example(exampl)
-        # 🔥 Проверяем правила
+        # Проверяем правила
         if check_rules_for_example(answer, rules):
-            print(f"✅ Попыток генерации {attempt + 1}: {exampl} = {answer}")
+            print(f'✅ Попыток генерации {attempt + 1}: {exampl} = {answer}')
             return f'{exampl} = ', answer
-    # 🔥 Если не удалось за max_attempts
-    print(f"⚠️ Не удалось сгенерировать пример за {max_attempts} попыток")
+    # Если не удалось за max_attempts
+    print(f'⚠️ Не удалось сгенерировать пример за {max_attempts} попыток')
     return None, None
 
 
@@ -99,11 +100,11 @@ def generate_all_examples(
     rules,
     min_number=0,
     max_number=50
-    ):
+):
     list_all_examples = []
     list_all_answers = []
     for i in range(number_of_examples):
-        print(f"\n--- Генерация примера {i + 1}/{number_of_examples} ---")
+        print(f'\n--- Генерация примера {i + 1}/{number_of_examples} ---')
         example, answer = generate_example(
             number_of_numbers,
             signs,
@@ -125,11 +126,11 @@ def write_in_docx_file(data, file_name='examples.docx'):
     for i, el in enumerate(data, 1):
         doc.add_paragraph(f'{i}) {el} _____')
     doc.save(file_name)
-    print(f"✅ Записано {len(data)} примеров в файл {file_name}")
+    print(f'✅ Записано {len(data)} примеров в файл {file_name}')
 
 
 def write_in_txt_file(data, file_name='examples.txt'):
-    with open(file_name, "w", encoding="utf-8") as f:
+    with open(file_name, 'w', encoding='utf-8') as f:
         for i, el in enumerate(data, 1):
             f.write(f'{i}) {el} \n')
 
@@ -142,7 +143,7 @@ def main(
     min_number=0,
     max_number=50
 ):
-    # 🔥 Генерируем примеры и ответы
+    # Генерируем примеры и ответы
     examples, answers = generate_all_examples(
         number_of_numbers,
         znak_operacii,
@@ -151,7 +152,7 @@ def main(
         min_number,
         max_number
     )
-    # 🔥 Записываем файлы
+    # Записываем файлы
     print(examples)
     print(answers)
     write_in_txt_file(examples, file_name='examples.txt')
@@ -174,19 +175,12 @@ def run_generation(config):
         config['max_number']
     )
     if not examples:
-        return False, "Не удалось сгенерировать примеры. Попробуйте изменить условия."
+        return (
+            False,
+            'Не удалось сгенерировать примеры. Попробуйте изменить условия.'
+        )
     write_in_txt_file(examples, file_name='examples.txt')
     write_in_docx_file(examples, file_name='examples.docx')
     write_in_txt_file(answers, file_name='answers.txt')
     write_in_docx_file(answers, file_name='answers.docx')
-    return True, f"Успешно создано {len(examples)} примеров!"
-
-"""
-if __name__ == "__main__":
-    # rules = ['not_negative', 'not_float']
-    rules = ['not_float']
-    # znaki = ['-', '+', '*', '/']
-    znaki = ['-', '+',]
-    main(3, znaki, 20, rules)
-    # print(main(5, '+', 7))
-"""
+    return True, f'Успешно создано {len(examples)} примеров!'
