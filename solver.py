@@ -179,7 +179,7 @@ class SolverWindow(ctk.CTkToplevel):
             # Поле ввода ответа
             entry = ctk.CTkEntry(
                 self.scrollable_frame,
-                width=100, 
+                width=100,
                 placeholder_text='Ответ',
                 justify='left'
             )
