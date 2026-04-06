@@ -13,7 +13,7 @@ class SolverWindow(ctk.CTkToplevel):
         super().__init__(parent)
         self.parent = parent
         self.title('Решение примеров')
-        self.geometry('750x500')
+        self.geometry('800x550')
         self.resizable(False, False)
 
         # Фокус на окне и модальность
@@ -108,21 +108,40 @@ class SolverWindow(ctk.CTkToplevel):
         )
         self.scrollbar.pack(side='right', fill='y', pady=10)
 
+        # Настройка сетки для столбцов в scrollable_frame
+        # columnconfigure с weight=1 позволяет растягивать столбец с примером
+        # №
+        self.scrollable_frame.grid_columnconfigure(0, minsize=20)
+        # Пример (растягивается)
+        self.scrollable_frame.grid_columnconfigure(1, weight=1)
+        # Ваш ответ
+        self.scrollable_frame.grid_columnconfigure(2, minsize=100)
+        # Правильный ответ
+        self.scrollable_frame.grid_columnconfigure(3, minsize=100)
+
         # Заголовки столбцов
         header_frame = ctk.CTkFrame(
             self.scrollable_frame, fg_color='transparent'
         )
-        header_frame.pack(fill='x', padx=10, pady=(0, 5))
+        header_frame.grid(
+            row=0, column=0, columnspan=4, sticky='ew', padx=10, pady=(0, 5)
+        )
+
+        # Настраиваем grid внутри header_frame для выравнивания
+        header_frame.grid_columnconfigure(0, minsize=40)
+        header_frame.grid_columnconfigure(1, weight=1)
+        header_frame.grid_columnconfigure(2, minsize=100)
+        header_frame.grid_columnconfigure(3, minsize=100)
 
         ctk.CTkLabel(
-            header_frame, text='#', width=30
-        ).pack(side='left', padx=(0, 5))
+            header_frame, text='#', width=10
+        ).grid(row=0, column=0, sticky='w', padx=(0, 5))
         ctk.CTkLabel(
             header_frame, text='Пример', anchor='w'
-        ).pack(side='left', padx=(0, 10))
+        ).grid(row=0, column=1, sticky='w', padx=(0, 10))
         ctk.CTkLabel(
             header_frame, text='Ваш ответ', width=100
-        ).pack(side='left', padx=(0, 10))
+        ).grid(row=0, column=2, sticky='w', padx=(0, 10))
 
         # Скрытый заголовок для столбца правильных ответов
         self.lbl_answer_header = ctk.CTkLabel(
@@ -132,42 +151,55 @@ class SolverWindow(ctk.CTkToplevel):
             fg_color='green',
             corner_radius=5
         )
-        self.lbl_answer_header.pack(side='left', padx=(0, 10))
-        self.lbl_answer_header.pack_forget()  # Скрыт по умолчанию
+        self.lbl_answer_header.grid(row=0, column=3, sticky='w', padx=(0, 10))
+        self.lbl_answer_header.grid_remove()  # Скрыт по умолчанию
 
-        # Поля с примерами
+        # Фрейм для строки
         for i, example in enumerate(self.examples):
-            row_frame = ctk.CTkFrame(
-                self.scrollable_frame, fg_color='transparent'
+            # Номер
+            lbl_num = ctk.CTkLabel(
+                self.scrollable_frame,
+                text=f'{i+1})',
+                width=40,
+                anchor='w'
             )
-            row_frame.pack(fill='x', padx=10, pady=5)
+            lbl_num.grid(row=i+1, column=0, sticky='w', padx=(0, 5), pady=5)
 
-            lbl_num = ctk.CTkLabel(row_frame, text=f'{i+1})', width=30)
-            lbl_num.pack(side='left', padx=(0, 5))
+            # Пример
+            lbl_example = ctk.CTkLabel(
+                self.scrollable_frame,
+                text=example,
+                anchor='w',
+                wraplength=300  # Перенос текста, если пример длинный
+            )
+            lbl_example.grid(
+                row=i+1, column=1, sticky='ew', padx=(0, 10), pady=5
+            )
 
-            lbl_example = ctk.CTkLabel(row_frame, text=example, anchor='w')
-            lbl_example.pack(side='left', padx=(0, 10))
-
-            lbl_eq = ctk.CTkLabel(row_frame, text='=', width=20)
-            lbl_eq.pack(side='left', padx=(0, 5))
-
+            # Поле ввода ответа
             entry = ctk.CTkEntry(
-                row_frame, width=100, placeholder_text='Ответ'
+                self.scrollable_frame,
+                width=100, 
+                placeholder_text='Ответ',
+                justify='left'
             )
-            entry.pack(side='left', padx=(0, 10))
+            entry.grid(row=i+1, column=2, sticky='w', padx=(0, 10), pady=5)
             self.entry_fields.append(entry)
 
-            # Метка для правильного ответа (скрыта по умолчанию)
+            # Метка правильного ответа (скрыта)
             lbl_answer = ctk.CTkLabel(
-                row_frame,
+                self.scrollable_frame,
                 text=self.answers[i],
                 width=100,
                 fg_color='green',
                 corner_radius=5,
-                text_color='white'
+                text_color='white',
+                anchor='w'
             )
-            lbl_answer.pack(side='left', padx=(0, 10))
-            lbl_answer.pack_forget()  # Скрыта по умолчанию
+            lbl_answer.grid(
+                row=i+1, column=3, sticky='w', padx=(0, 10), pady=5
+            )
+            lbl_answer.grid_remove()  # Скрыта по умолчанию
             self.answer_labels.append(lbl_answer)
 
         # Нижняя панель с кнопками
@@ -312,14 +344,14 @@ class SolverWindow(ctk.CTkToplevel):
         """Показывает/скрывает столбец с правильными ответами"""
         if self.answers_shown:
             for lbl in self.answer_labels:
-                lbl.pack_forget()
-            self.lbl_answer_header.pack_forget()
+                lbl.grid_remove()
+            self.lbl_answer_header.grid_remove()
             self.btn_show_answers.configure(text='👁️ Посмотреть ответы')
             self.answers_shown = False
         else:
             for lbl in self.answer_labels:
-                lbl.pack(side='left', padx=(0, 10))
-            self.lbl_answer_header.pack(side='left', padx=(0, 10))
+                lbl.grid()
+            self.lbl_answer_header.grid()
             self.btn_show_answers.configure(text='🙈 Скрыть ответы')
             self.answers_shown = True
 
