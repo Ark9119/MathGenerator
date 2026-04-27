@@ -4,12 +4,26 @@ import re
 
 from docx import Document
 
+from logging_config import setup_logging
+# from services.processor import run_processor
+import logging
+# ⚠️ Вызывается ДО создания логгеров в других модулях
+setup_logging(
+    log_file="logs/my_app.log",
+    level_console=logging.DEBUG,
+    level_file=logging.INFO
+)
+
+
+logger = logging.getLogger(__name__)
+
 
 def generate_num(number_of_numbers, min_number, max_number):
     """Генерирует список случайных чисел"""
     list_of_num = []
     for i in range(number_of_numbers):
         list_of_num.append(str(random.randint(min_number, max_number)))
+    logger.info(f'Сгенерирован список случайных чисел {list_of_num}')
     return list_of_num
 
 
@@ -86,10 +100,10 @@ def generate_example(
         answer = ansver_for_example(exampl)
         # Проверяем правила
         if check_rules_for_example(answer, rules):
-            print(f'✅ Попыток генерации {attempt + 1}: {exampl} = {answer}')
+            # print(f'✅ Попыток генерации {attempt + 1}: {exampl} = {answer}')
             return f'{exampl} = ', answer
     # Если не удалось за max_attempts
-    print(f'⚠️ Не удалось сгенерировать пример за {max_attempts} попыток')
+    # print(f'⚠️ Не удалось сгенерировать пример за {max_attempts} попыток')
     return None, None
 
 
@@ -104,7 +118,7 @@ def generate_all_examples(
     list_all_examples = []
     list_all_answers = []
     for i in range(number_of_examples):
-        print(f'\n--- Генерация примера {i + 1}/{number_of_examples} ---')
+        # print(f'\n--- Генерация примера {i + 1}/{number_of_examples} ---')
         example, answer = generate_example(
             number_of_numbers,
             signs,
@@ -126,7 +140,7 @@ def write_in_docx_file(data, file_name='examples.docx'):
     for i, el in enumerate(data, 1):
         doc.add_paragraph(f'{i}) {el} _____')
     doc.save(file_name)
-    print(f'✅ Записано {len(data)} примеров в файл {file_name}')
+    # print(f'✅ Записано {len(data)} примеров в файл {file_name}')
 
 
 def write_in_txt_file(data, file_name='examples.txt'):
@@ -153,8 +167,8 @@ def main(
         max_number
     )
     # Записываем файлы
-    print(examples)
-    print(answers)
+    # print(examples)
+    # print(answers)
     write_in_txt_file(examples, file_name='examples.txt')
     write_in_docx_file(examples, file_name='examples.docx')
     write_in_txt_file(answers, file_name='answers.txt')
