@@ -3,16 +3,7 @@ import datetime
 import re
 
 from docx import Document
-
-from logging_config import setup_logging
-# from services.processor import run_processor
 import logging
-# ⚠️ Вызывается ДО создания логгеров в других модулях
-setup_logging(
-    log_file="logs/my_app.log",
-    level_console=logging.DEBUG,
-    level_file=logging.INFO
-)
 
 
 logger = logging.getLogger(__name__)
@@ -37,14 +28,17 @@ def ansver_for_example(example):
         clean_example = example.replace('=', '').strip()
         # Разрешаем только цифры, операторы и пробелы
         if not re.match(r'^[\d\s\+\-\*\/\.]+$', clean_example):
+            logger.error('Недопустимые символы в примере')
             raise ValueError('Недопустимые символы в примере')
         result = eval(clean_example)
         # Округляем до 2 знаков после запятой
         result = round(result, 2)
         return result
     except ZeroDivisionError:
+        logger.error('Ошибка: деление на ноль')
         return 'Ошибка: деление на ноль'
     except Exception as e:
+        logger.error(f'Ошибка: {e}')
         return f'Ошибка: {e}'
 
 
@@ -100,9 +94,15 @@ def generate_example(
         answer = ansver_for_example(exampl)
         # Проверяем правила
         if check_rules_for_example(answer, rules):
+            logger.info(
+                f'✅ Попыток генерации {attempt + 1}: {exampl} = {answer}'
+            )
             # print(f'✅ Попыток генерации {attempt + 1}: {exampl} = {answer}')
             return f'{exampl} = ', answer
     # Если не удалось за max_attempts
+    logger.debug(
+        f'⚠️ Не удалось сгенерировать пример за {max_attempts} попыток'
+    )
     # print(f'⚠️ Не удалось сгенерировать пример за {max_attempts} попыток')
     return None, None
 
@@ -114,10 +114,20 @@ def generate_all_examples(
     rules,
     min_number=0,
     max_number=50
-):
+):  # TODO сделать обработку ошибок
+    logger.debug('Генератор получил аргументы:')
+    logger.debug(f'Количество чисел в примере {number_of_numbers}')
+    logger.debug(f'Количество примеров {number_of_examples}')
+    logger.debug(f'Используемые знаки {signs}')
+    logger.debug(f'Правила {rules}')
+    logger.debug(f'Диапазон чисел от {min_number} до {max_number}')
+
     list_all_examples = []
     list_all_answers = []
     for i in range(number_of_examples):
+        logger.info(
+            f'\n--- Генерация примера {i + 1}/{number_of_examples} ---'
+        )
         # print(f'\n--- Генерация примера {i + 1}/{number_of_examples} ---')
         example, answer = generate_example(
             number_of_numbers,
@@ -140,6 +150,10 @@ def write_in_docx_file(data, file_name='examples.docx'):
     for i, el in enumerate(data, 1):
         doc.add_paragraph(f'{i}) {el} _____')
     doc.save(file_name)
+    logger.info(
+        # f'\n--- Запись в .docx файл ---\n'
+        f'✅ Записано {len(data)} примеров в файл {file_name}'
+    )
     # print(f'✅ Записано {len(data)} примеров в файл {file_name}')
 
 
@@ -147,6 +161,10 @@ def write_in_txt_file(data, file_name='examples.txt'):
     with open(file_name, 'w', encoding='utf-8') as f:
         for i, el in enumerate(data, 1):
             f.write(f'{i}) {el} \n')
+    logger.info(
+        # f'\n--- Запись в .txt файл ---\n'
+        f'✅ Записано {len(data)} примеров в файл {file_name}'
+    )
 
 
 def main(
@@ -167,8 +185,6 @@ def main(
         max_number
     )
     # Записываем файлы
-    # print(examples)
-    # print(answers)
     write_in_txt_file(examples, file_name='examples.txt')
     write_in_docx_file(examples, file_name='examples.docx')
     write_in_txt_file(answers, file_name='answers.txt')
@@ -189,6 +205,7 @@ def run_generation(config):
         config['max_number']
     )
     if not examples:
+        logger.error('Не удалось сгенерировать примеры. Попробуйте изменить условия.')
         return (
             False,
             'Не удалось сгенерировать примеры. Попробуйте изменить условия.'
@@ -197,4 +214,5 @@ def run_generation(config):
     write_in_docx_file(examples, file_name='examples.docx')
     write_in_txt_file(answers, file_name='answers.txt')
     write_in_docx_file(answers, file_name='answers.docx')
+    logger.info(f'Успешно создано {len(examples)} примеров!')
     return True, f'Успешно создано {len(examples)} примеров!'

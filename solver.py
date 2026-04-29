@@ -5,6 +5,10 @@ import time
 
 import customtkinter as ctk
 import tkinter.messagebox as messagebox
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class SolverWindow(ctk.CTkToplevel):
@@ -14,6 +18,7 @@ class SolverWindow(ctk.CTkToplevel):
         self.parent = parent
         self.title('Решение примеров')
         self.geometry('800x550')
+        logger.info('Создано окно для решения примеров 800х550')
         self.resizable(False, False)
 
         # Фокус на окне и модальность

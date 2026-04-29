@@ -4,7 +4,12 @@ import tkinter.messagebox as messagebox
 
 from main import run_generation
 from solver import open_solver
+from log_viewer import LogViewer
 
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 ctk.set_appearance_mode('System')
 ctk.set_default_color_theme('blue')
@@ -53,6 +58,7 @@ class App(ctk.CTk):
         super().__init__()
         self.title('Генератор математических примеров')
         self.geometry('550x550')
+        logger.info('Создано окно 550x550')
         self.resizable(False, False)
 
         # Блок настроек
@@ -153,6 +159,19 @@ class App(ctk.CTk):
             side='right', pady=10, padx=(10, 0), fill='x', expand=True
         )
 
+        # 🔹 Кнопка "Смотреть логи"
+        self.btn_logs = ctk.CTkButton(
+            self.btn_frame,
+            text='Логи',
+            command=self.open_log_viewer,
+            height=40,
+            fg_color='gray30',  # Нейтральный цвет
+            hover_color='gray25'
+        )
+        self.btn_logs.pack(side='left', pady=10, padx=(10, 0))
+        # 🔹 Ссылка на окно логов (чтобы не открывать дубликаты)
+        self.log_viewer_window = None
+
         self.lbl_status = ctk.CTkLabel(
             self, text='Готов к работе', text_color='gray'
         )
@@ -212,6 +231,12 @@ class App(ctk.CTk):
             }
 
             # Запуск логики из main.py
+            logger.debug('Пользователь передал аргументы:')
+            logger.debug(f'Количество чисел в примере {nums_count}')
+            logger.debug(f'Количество примеров {ex_count}')
+            logger.debug(f'Используемые знаки {signs}')
+            logger.debug(f'Правила {rules}')
+            logger.debug(f'Диапазон чисел от {min_num} до {max_num}')
             success, message = run_generation(config)
             if success:
                 self.update_status(message, 'green')
@@ -232,7 +257,15 @@ class App(ctk.CTk):
     def reset_button(self):
         self.btn_generate.configure(state='normal', text='Сгенерировать')
 
-
-if __name__ == '__main__':
-    app = App()
-    app.mainloop()
+    def open_log_viewer(self):
+        """Открывает или фокусирует окно просмотра логов."""
+        # Если окно уже открыто — поднимаем его на передний план
+        if (
+            self.log_viewer_window is not None and
+            self.log_viewer_window.winfo_exists()
+        ):
+            self.log_viewer_window.focus_force()
+            self.log_viewer_window.lift()
+            return
+        # Иначе создаём новое
+        self.log_viewer_window = LogViewer(self, title="🪟 Логи приложения")
