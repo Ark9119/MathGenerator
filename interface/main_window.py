@@ -2,9 +2,9 @@ import customtkinter as ctk
 import threading
 import tkinter.messagebox as messagebox
 
-from main import run_generation
-from solver import open_solver
-from log_viewer import LogViewer
+from algoritm.main_algoritm import run_generation
+from interface.solver_window import open_solver
+from interface.log_window import LogViewer
 
 import logging
 
@@ -194,6 +194,7 @@ class App(ctk.CTk):
 
     def run_generation_task(self):
         """Логика генерации (выполняется в фоне)"""
+        logger.info('Получен запрос на генерацию.')
         try:
             # Сбор данных из интерфейса
             try:

@@ -162,7 +162,6 @@ def write_in_txt_file(data, file_name='examples.txt'):
         for i, el in enumerate(data, 1):
             f.write(f'{i}) {el} \n')
     logger.info(
-        # f'\n--- Запись в .txt файл ---\n'
         f'✅ Записано {len(data)} примеров в файл {file_name}'
     )
 
@@ -175,6 +174,7 @@ def main(
     min_number=0,
     max_number=50
 ):
+    """Основная функция для генерации. Для debug'a без интерфейса."""
     # Генерируем примеры и ответы
     examples, answers = generate_all_examples(
         number_of_numbers,
@@ -194,8 +194,10 @@ def main(
 # Функция-обертка, которую будет вызывать интерфейс
 def run_generation(config):
     """
+    Обёртка для обращения интерфейса к алгоритму.
     config: словарь с настройками из интерфейса
     """
+    logger.info('Начата генерация примеров.')
     examples, answers = generate_all_examples(
         config['numbers_count'],
         config['signs'],
@@ -205,7 +207,9 @@ def run_generation(config):
         config['max_number']
     )
     if not examples:
-        logger.error('Не удалось сгенерировать примеры. Попробуйте изменить условия.')
+        logger.error(
+            'Не удалось сгенерировать примеры. Попробуйте изменить условия.'
+        )
         return (
             False,
             'Не удалось сгенерировать примеры. Попробуйте изменить условия.'

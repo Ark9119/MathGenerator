@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Точка входа в приложение. Запуск: python run.py"""
 
-from log_viewer import init_log_queue  # 🔹 Импортируем
-from logging_config import setup_logging
-from interface_for_main import App
+from interface.log_window import init_log_queue  # 🔹 Импортируем
+from algoritm.logging_config import setup_logging
+from interface.main_window import App
 import logging
 
 

@@ -3,7 +3,7 @@ import os
 import sys
 from logging.handlers import RotatingFileHandler
 from typing import Optional
-from log_viewer import QueueHandler, get_log_queue
+from interface.log_window import QueueHandler, get_log_queue
 
 
 class ModuleFilter(logging.Filter):

@@ -1,5 +1,5 @@
 import pytest
-from ..main import main, generate_all_examples
+from ..algoritm.main_algoritm import main, generate_all_examples
 
 
 @pytest.fixture

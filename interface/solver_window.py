@@ -18,7 +18,6 @@ class SolverWindow(ctk.CTkToplevel):
         self.parent = parent
         self.title('Решение примеров')
         self.geometry('800x550')
-        logger.info('Создано окно для решения примеров 800х550')
         self.resizable(False, False)
 
         # Фокус на окне и модальность
@@ -61,6 +60,7 @@ class SolverWindow(ctk.CTkToplevel):
                                     '_____', ''
                                 ).strip()
                                 self.examples.append(example)
+                logger.info('Примеры найдены и загружены.')
             else:
                 raise FileNotFoundError(
                     'Файл examples.txt не найден. '
@@ -77,6 +77,7 @@ class SolverWindow(ctk.CTkToplevel):
                             if match:
                                 answer = match.group(1).strip()
                                 self.answers.append(answer)
+                logger.info('Ответы найдены и загружены.')
             else:
                 raise FileNotFoundError('Файл answers.txt не найден.')
 
@@ -272,6 +273,7 @@ class SolverWindow(ctk.CTkToplevel):
         self.start_time = time.time()
         self.timer_running = True
         self._update_timer()
+        logger.info('Таймер запущен.')
 
     def _update_timer(self):
         """Обновляет отображение таймера"""
@@ -289,6 +291,7 @@ class SolverWindow(ctk.CTkToplevel):
         if self.timer_job:
             self.after_cancel(self.timer_job)
             self.timer_job = None
+        logger.info('Таймер остановлен.')
 
     def _get_elapsed_time(self):
         """Возвращает прошедшее время в формате MM:SS"""
@@ -344,6 +347,9 @@ class SolverWindow(ctk.CTkToplevel):
             f'Точность: {percentage:.1f}% '
             f'Время решения: {final_time}'
         )
+        logger.info(
+            f'Задание проверено: {percentage:.1f}%, за {final_time}'
+        )
 
     def _toggle_answers(self):
         """Показывает/скрывает столбец с правильными ответами"""
@@ -359,14 +365,17 @@ class SolverWindow(ctk.CTkToplevel):
             self.lbl_answer_header.grid()
             self.btn_show_answers.configure(text='🙈 Скрыть ответы')
             self.answers_shown = True
+            logger.info('Показаны правильные ответы.')
 
     def _on_close(self):
         """Закрытие окна"""
+        logger.info('Закрыто окно решений примеров')
         self._stop_timer()
         self.destroy()
 
 
 def open_solver(parent):
     """Функция для открытия окна решения из главного окна"""
+    logger.info('Открыто окно решений примеров')
     solver = SolverWindow(parent)
     solver.wait_window()  # Ждём закрытия окна решения
