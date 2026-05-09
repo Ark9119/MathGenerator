@@ -1,6 +1,7 @@
 import customtkinter as ctk
 import threading
 import tkinter.messagebox as messagebox
+import webbrowser
 
 from algoritm.main_algoritm import run_generation
 from interface.solver_window import open_solver
@@ -70,6 +71,7 @@ class App(ctk.CTk):
             self.frame_settings, text='Чисел в примере:'
         )
         self.lbl_count.grid(row=0, column=0, padx=10, pady=5, sticky='w')
+
         self.entry_count = ctk.CTkEntry(self.frame_settings, width=50)
         self.entry_count.grid(row=0, column=1, padx=5, pady=5)
         self.entry_count.insert(0, '3')
@@ -78,6 +80,7 @@ class App(ctk.CTk):
             self.frame_settings, text='Кол-во примеров:'
         )
         self.lbl_examples.grid(row=0, column=2, padx=10, pady=5, sticky='w')
+
         self.entry_examples = ctk.CTkEntry(self.frame_settings, width=50)
         self.entry_examples.grid(row=0, column=3, padx=5, pady=5)
         self.entry_examples.insert(0, '20')
@@ -176,6 +179,30 @@ class App(ctk.CTk):
             self, text='Готов к работе', text_color='gray'
         )
         self.lbl_status.pack(pady=(0, 10))
+
+        # Строка с информацией об авторе и ссылки
+        self.frame_about = ctk.CTkFrame(self)
+        self.frame_about.pack(pady=5, padx=(5, 5), fill='x')
+
+        self.about = ctk.CTkLabel(
+            self.frame_about,
+            text='Created by Ark. Ark9119@yandex.ru.',
+            text_color='gray'
+        )
+        self.about.pack(side='left', padx=(0, 5))
+
+        self.about_git_link = ctk.CTkButton(
+            self.frame_about,
+            text='GitHub',
+            command=lambda: webbrowser.open('https://github.com/Ark9119/'),
+            fg_color='transparent',
+            text_color='gray',
+            width=0,
+            height=0
+        )
+        self.about_git_link.pack(
+            side='left', pady=5, padx=(0, 5)
+        )
 
     def open_solver_window(self):
         """Открывает окно решения"""
