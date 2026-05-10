@@ -58,8 +58,8 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title('Генератор математических примеров')
-        self.geometry('550x550')
-        logger.info('Создано окно 550x550')
+        # self.geometry('550x550')
+        logger.info('Создано окно основного интерфейса')
         self.resizable(False, False)
 
         # Блок настроек
@@ -100,7 +100,7 @@ class App(ctk.CTk):
 
         # Блок знаков и правил
         self.frame_options = ctk.CTkFrame(self)
-        self.frame_options.pack(pady=10, padx=10, fill='both', expand=True)
+        self.frame_options.pack(pady=10, padx=10)
 
         self.frame_options.grid_columnconfigure(0, weight=1)
         self.frame_options.grid_columnconfigure(1, weight=1)
@@ -137,41 +137,61 @@ class App(ctk.CTk):
         self.checkbox_signs.checkboxes[1].select()
         self.checkbox_rules.checkboxes[1].select()  # not_float
 
-        # Кнопки
-        self.btn_frame = ctk.CTkFrame(self, fg_color='transparent')
-        self.btn_frame.pack(pady=10, padx=10, fill='x')
+        # Фрейм: Сгенерировать и Решать примеры.
+        self.first_btn_frame = ctk.CTkFrame(self, fg_color='transparent')
+        self.first_btn_frame.pack(padx=10, fill='x')
+
+        self.first_btn_frame.grid_columnconfigure(0, weight=1)
+        self.first_btn_frame.grid_columnconfigure(1, weight=1)
 
         self.btn_generate = ctk.CTkButton(
-            self.btn_frame,
+            self.first_btn_frame,
             text='Сгенерировать',
             command=self.start_generation_thread,
             height=40
         )
-        self.btn_generate.pack(
-            side='left', pady=10, padx=(0, 10), fill='x', expand=True
+        # self.btn_generate.pack(
+        #     side='left', pady=10, padx=(0, 10), fill='x', expand=True
+        # )
+        self.btn_generate.grid(
+            row=0, column=0, padx=10, pady=10, sticky='nsew'
         )
 
         self.btn_solve = ctk.CTkButton(
-            self.btn_frame,
+            self.first_btn_frame,
             text='Решать примеры',
             command=self.open_solver_window,
             height=40,
             fg_color='green'
         )
-        self.btn_solve.pack(
-            side='right', pady=10, padx=(10, 0), fill='x', expand=True
+        # self.btn_solve.pack(
+        #     side='right', pady=10, padx=(10, 0), fill='x', expand=True
+        # )
+        self.btn_solve.grid(
+            row=0, column=1, padx=10, pady=10, sticky='nsew'
         )
+
+        # Фрейм: логи и о проекте.
+        # self.second_btn_frame = ctk.CTkFrame(self, fg_color='transparent')
+        # self.second_btn_frame.pack(padx=10, fill='x')
 
         # 🔹 Кнопка "Смотреть логи"
         self.btn_logs = ctk.CTkButton(
-            self.btn_frame,
+            # self.second_btn_frame,
+            self.first_btn_frame,
             text='Логи',
             command=self.open_log_viewer,
-            height=40,
+            height=20,
             fg_color='gray30',  # Нейтральный цвет
             hover_color='gray25'
         )
-        self.btn_logs.pack(side='left', pady=10, padx=(10, 0))
+        # self.btn_logs.pack(side='left', pady=10, padx=(10, 0))
+        # self.btn_logs.pack(
+        #     side='left', pady=10, padx=(0, 10), fill='x', expand=True
+        # )
+        self.btn_logs.grid(
+            row=1, column=0, padx=10, pady=10, sticky='nsew'
+        )
         # 🔹 Ссылка на окно логов (чтобы не открывать дубликаты)
         self.log_viewer_window = None
 
@@ -180,16 +200,34 @@ class App(ctk.CTk):
         )
         self.lbl_status.pack(pady=(0, 10))
 
+        # 🔹 Кнопка "О приложении"
+        self.btn_instructions = ctk.CTkButton(
+            # self.second_btn_frame,
+            self.first_btn_frame,
+            text='О приложении',
+            command=self.open_log_viewer,
+            height=20,
+            fg_color='gray30',  # Нейтральный цвет
+            hover_color='gray25'
+        )
+        # self.btn_instructions.pack(side='left', pady=10, padx=(10, 0))
+        # self.btn_instructions.pack(
+        #     side='left', pady=10, padx=(0, 10), fill='x', expand=True
+        # )
+        self.btn_instructions.grid(
+            row=1, column=1, padx=10, pady=10, sticky='nsew'
+        )
+
         # Строка с информацией об авторе и ссылки
         self.frame_about = ctk.CTkFrame(self)
-        self.frame_about.pack(pady=5, padx=(5, 5), fill='x')
+        self.frame_about.pack(padx=(5, 5), fill='x')
 
         self.about = ctk.CTkLabel(
             self.frame_about,
             text='Created by Ark. Ark9119@yandex.ru.',
             text_color='gray'
         )
-        self.about.pack(side='left', padx=(0, 5))
+        self.about.pack(side='left', padx=(5, 5))
 
         self.about_git_link = ctk.CTkButton(
             self.frame_about,
@@ -201,7 +239,7 @@ class App(ctk.CTk):
             height=0
         )
         self.about_git_link.pack(
-            side='left', pady=5, padx=(0, 5)
+            side='right', pady=5, padx=(0, 5)
         )
 
     def open_solver_window(self):
