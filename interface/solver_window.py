@@ -142,9 +142,11 @@ class SolverWindow(ctk.CTkToplevel):
         ctk.CTkLabel(
             header_frame, text='#', width=10
         ).grid(row=0, column=0, sticky='w', padx=(0, 5))
+
         ctk.CTkLabel(
             header_frame, text='Пример', anchor='w'
         ).grid(row=0, column=1, sticky='w', padx=(0, 10))
+
         ctk.CTkLabel(
             header_frame, text='Ваш ответ', width=100
         ).grid(row=0, column=2, sticky='w', padx=(0, 10))

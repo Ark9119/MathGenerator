@@ -6,6 +6,7 @@ import webbrowser
 from algoritm.main_algoritm import run_generation
 from interface.solver_window import open_solver
 from interface.log_window import LogViewer
+from interface.about_window import AboutWindow
 
 import logging
 
@@ -64,14 +65,13 @@ class App(ctk.CTk):
 
         # Блок настроек
         self.frame_settings = ctk.CTkFrame(self)
-        self.frame_settings.pack(pady=10, padx=10, fill='x')
+        self.frame_settings.pack(pady=5, padx=5)
 
         # Строка 1: Количество чисел и примеров
         self.lbl_count = ctk.CTkLabel(
             self.frame_settings, text='Чисел в примере:'
         )
         self.lbl_count.grid(row=0, column=0, padx=10, pady=5, sticky='w')
-
         self.entry_count = ctk.CTkEntry(self.frame_settings, width=50)
         self.entry_count.grid(row=0, column=1, padx=5, pady=5)
         self.entry_count.insert(0, '3')
@@ -80,7 +80,6 @@ class App(ctk.CTk):
             self.frame_settings, text='Кол-во примеров:'
         )
         self.lbl_examples.grid(row=0, column=2, padx=10, pady=5, sticky='w')
-
         self.entry_examples = ctk.CTkEntry(self.frame_settings, width=50)
         self.entry_examples.grid(row=0, column=3, padx=5, pady=5)
         self.entry_examples.insert(0, '20')
@@ -101,7 +100,6 @@ class App(ctk.CTk):
         # Блок знаков и правил
         self.frame_options = ctk.CTkFrame(self)
         self.frame_options.pack(pady=10, padx=10)
-
         self.frame_options.grid_columnconfigure(0, weight=1)
         self.frame_options.grid_columnconfigure(1, weight=1)
 
@@ -138,99 +136,83 @@ class App(ctk.CTk):
         self.checkbox_rules.checkboxes[1].select()  # not_float
 
         # Фрейм: Сгенерировать и Решать примеры.
-        self.first_btn_frame = ctk.CTkFrame(self, fg_color='transparent')
-        self.first_btn_frame.pack(padx=10, fill='x')
+        self.btn_frame = ctk.CTkFrame(self, fg_color='transparent')
+        self.btn_frame.pack(padx=10, fill='x')
 
-        self.first_btn_frame.grid_columnconfigure(0, weight=1)
-        self.first_btn_frame.grid_columnconfigure(1, weight=1)
+        # self.btn_frame.grid_columnconfigure(0, weight=1)
+        # self.btn_frame.grid_columnconfigure(1, weight=1)
+        self.btn_frame.grid_columnconfigure((0, 1), weight=1)
 
         self.btn_generate = ctk.CTkButton(
-            self.first_btn_frame,
+            self.btn_frame,
             text='Сгенерировать',
             command=self.start_generation_thread,
             height=40
         )
-        # self.btn_generate.pack(
-        #     side='left', pady=10, padx=(0, 10), fill='x', expand=True
-        # )
         self.btn_generate.grid(
             row=0, column=0, padx=10, pady=10, sticky='nsew'
         )
 
         self.btn_solve = ctk.CTkButton(
-            self.first_btn_frame,
+            self.btn_frame,
             text='Решать примеры',
             command=self.open_solver_window,
             height=40,
             fg_color='green'
         )
-        # self.btn_solve.pack(
-        #     side='right', pady=10, padx=(10, 0), fill='x', expand=True
-        # )
         self.btn_solve.grid(
             row=0, column=1, padx=10, pady=10, sticky='nsew'
         )
 
-        # Фрейм: логи и о проекте.
-        # self.second_btn_frame = ctk.CTkFrame(self, fg_color='transparent')
-        # self.second_btn_frame.pack(padx=10, fill='x')
-
-        # 🔹 Кнопка "Смотреть логи"
+        # Кнопка "Смотреть логи"
         self.btn_logs = ctk.CTkButton(
-            # self.second_btn_frame,
-            self.first_btn_frame,
+            self.btn_frame,
             text='Логи',
             command=self.open_log_viewer,
             height=20,
-            fg_color='gray30',  # Нейтральный цвет
+            fg_color='gray30',
             hover_color='gray25'
         )
-        # self.btn_logs.pack(side='left', pady=10, padx=(10, 0))
-        # self.btn_logs.pack(
-        #     side='left', pady=10, padx=(0, 10), fill='x', expand=True
-        # )
         self.btn_logs.grid(
             row=1, column=0, padx=10, pady=10, sticky='nsew'
         )
-        # 🔹 Ссылка на окно логов (чтобы не открывать дубликаты)
+        # Ссылка на окно логов (чтобы не открывать дубликаты)
         self.log_viewer_window = None
+
+        # Кнопка "О приложении"
+        self.btn_about = ctk.CTkButton(
+            self.btn_frame,
+            text='О приложении',
+            command=self.open_about_window,
+            height=20,
+            fg_color='gray30',
+            hover_color='gray25'
+        )
+
+        self.btn_about.grid(
+            row=1, column=1, padx=10, pady=10, sticky='nsew'
+        )
+        # Ссылка на окно информации (чтобы не открывать дубликаты)
+        self.about_window = None
 
         self.lbl_status = ctk.CTkLabel(
             self, text='Готов к работе', text_color='gray'
         )
         self.lbl_status.pack(pady=(0, 10))
 
-        # 🔹 Кнопка "О приложении"
-        self.btn_instructions = ctk.CTkButton(
-            # self.second_btn_frame,
-            self.first_btn_frame,
-            text='О приложении',
-            command=self.open_log_viewer,
-            height=20,
-            fg_color='gray30',  # Нейтральный цвет
-            hover_color='gray25'
-        )
-        # self.btn_instructions.pack(side='left', pady=10, padx=(10, 0))
-        # self.btn_instructions.pack(
-        #     side='left', pady=10, padx=(0, 10), fill='x', expand=True
-        # )
-        self.btn_instructions.grid(
-            row=1, column=1, padx=10, pady=10, sticky='nsew'
-        )
-
         # Строка с информацией об авторе и ссылки
-        self.frame_about = ctk.CTkFrame(self)
-        self.frame_about.pack(padx=(5, 5), fill='x')
+        self.frame_author_info = ctk.CTkFrame(self)
+        self.frame_author_info.pack(padx=(5, 5), fill='x')
 
-        self.about = ctk.CTkLabel(
-            self.frame_about,
+        self.author_info = ctk.CTkLabel(
+            self.frame_author_info,
             text='Created by Ark. Ark9119@yandex.ru.',
             text_color='gray'
         )
-        self.about.pack(side='left', padx=(5, 5))
+        self.author_info.pack(side='left', padx=(5, 5))
 
-        self.about_git_link = ctk.CTkButton(
-            self.frame_about,
+        self.author_info_git_link = ctk.CTkButton(
+            self.frame_author_info,
             text='GitHub',
             command=lambda: webbrowser.open('https://github.com/Ark9119/'),
             fg_color='transparent',
@@ -238,7 +220,7 @@ class App(ctk.CTk):
             width=0,
             height=0
         )
-        self.about_git_link.pack(
+        self.author_info_git_link.pack(
             side='right', pady=5, padx=(0, 5)
         )
 
@@ -335,3 +317,16 @@ class App(ctk.CTk):
             return
         # Иначе создаём новое
         self.log_viewer_window = LogViewer(self, title="🪟 Логи приложения")
+
+    def open_about_window(self):
+        """Открывает или фокусирует окно просмотра логов."""
+        # Если окно уже открыто — поднимаем его на передний план
+        if (
+            self.about_window is not None and
+            self.about_window.winfo_exists()
+        ):
+            self.about_window.focus_force()
+            self.about_window.lift()
+            return
+        # Иначе создаём новое
+        self.about_window = AboutWindow(self, title="Информация о приложении")
