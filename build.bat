@@ -6,7 +6,8 @@ echo ==========================================
 echo.
 
 set APP_NAME=MathGenerator
-set MAIN_FILE=interface_for_main.py
+@REM set MAIN_FILE=interface_for_main.py
+set MAIN_FILE=run.py
 set HIDDEN_IMPORTS=--hidden-import=customtkinter --hidden-import=customtkinter.theme_manager --hidden-import=customtkinter.windows.widgets --hidden-import=docx --hidden-import=PIL --hidden-import=packaging --hidden-import=tkinter.messagebox
 
 python -m pip show pyinstaller >nul 2>&1
