@@ -33,15 +33,12 @@ class ColoredFormatter(logging.Formatter):
     RESET = '\033[0m'
 
     def format(self, record: logging.LogRecord) -> str:
-        # Сначала форматируем базовое сообщение
         msg = super().format(record)
-        # Находим levelname в строке и оборачиваем только его
         color = self.COLORS.get(record.levelname, '')
-        # Заменяем levelname на цветную версию (один раз)
         msg = msg.replace(
             record.levelname,
             f"{color}{record.levelname}{self.RESET}",
-            1  # только первое вхождение
+            1
         )
         return msg
 
@@ -92,7 +89,7 @@ def setup_logging(
     file_handler.setFormatter(logging.Formatter(fmt, datefmt=datefmt))
     root.addHandler(file_handler)
 
-    # 📁 Отдельные хендлеры для указанных модулей
+    # Отдельные хендлеры для указанных модулей
     if module_logs:
         for module_name, file_path in module_logs.items():
             # Создаём папку, если нужно
@@ -112,13 +109,13 @@ def setup_logging(
             handler.addFilter(ModuleFilter(module_name))
             root.addHandler(handler)
 
-    # 🖥️ Консольный хендлер (С ЦВЕТАМИ)
+    # Консольный хендлер (С ЦВЕТАМИ)
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(level_console)
     console_handler.setFormatter(ColoredFormatter(fmt, datefmt=datefmt))
     root.addHandler(console_handler)
 
-    # 📨 Хендлер для стриминга в UI (если очередь инициализирована)
+    # Хендлер для стриминга в UI (если очередь инициализирована)
     log_queue = get_log_queue()
     if log_queue is not None:
         # 🔹 Формат должен соответствовать паттерну в _insert_colored_log

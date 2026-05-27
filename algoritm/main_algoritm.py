@@ -45,7 +45,7 @@ def ansver_for_example(example):
 def check_rules_for_example(answer, rules):
     """
     Проверяет ответ на соответствие правилам
-    :return: True если все правила пройдены, False иначе
+    True если все правила пройдены, False иначе
     """
     if not isinstance(answer, (int, float)):
         return False
@@ -74,7 +74,7 @@ def generate_example(
     max_number=50
 ):
     """
-    Генерирует пример с проверкой правил
+    Генерирует пример с проверкой правил.
     Перегенерирует пока не найдётся подходящий пример
     """
     for attempt in range(max_attempts):
@@ -95,15 +95,13 @@ def generate_example(
         # Проверяем правила
         if check_rules_for_example(answer, rules):
             logger.info(
-                f'✅ Попыток генерации {attempt + 1}: {exampl} = {answer}'
+                f'Попыток генерации {attempt + 1}: {exampl} = {answer}'
             )
-            # print(f'✅ Попыток генерации {attempt + 1}: {exampl} = {answer}')
             return f'{exampl} = ', answer
     # Если не удалось за max_attempts
     logger.debug(
         f'⚠️ Не удалось сгенерировать пример за {max_attempts} попыток'
     )
-    # print(f'⚠️ Не удалось сгенерировать пример за {max_attempts} попыток')
     return None, None
 
 
@@ -128,7 +126,6 @@ def generate_all_examples(
         logger.info(
             f'\n--- Генерация примера {i + 1}/{number_of_examples} ---'
         )
-        # print(f'\n--- Генерация примера {i + 1}/{number_of_examples} ---')
         example, answer = generate_example(
             number_of_numbers,
             signs,
@@ -151,10 +148,8 @@ def write_in_docx_file(data, file_name='examples.docx'):
         doc.add_paragraph(f'{i}) {el} _____')
     doc.save(file_name)
     logger.info(
-        # f'\n--- Запись в .docx файл ---\n'
         f'✅ Записано {len(data)} примеров в файл {file_name}'
     )
-    # print(f'✅ Записано {len(data)} примеров в файл {file_name}')
 
 
 def write_in_txt_file(data, file_name='examples.txt'):

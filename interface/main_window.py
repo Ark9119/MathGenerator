@@ -74,7 +74,7 @@ class App(ctk.CTk):
         self.lbl_count.grid(row=0, column=0, padx=10, pady=5, sticky='w')
         self.entry_count = ctk.CTkEntry(self.frame_settings, width=50)
         self.entry_count.grid(row=0, column=1, padx=5, pady=5)
-        self.entry_count.insert(0, '3')
+        self.entry_count.insert(0, '2')
 
         self.lbl_examples = ctk.CTkLabel(
             self.frame_settings, text='Кол-во примеров:'
@@ -82,7 +82,7 @@ class App(ctk.CTk):
         self.lbl_examples.grid(row=0, column=2, padx=10, pady=5, sticky='w')
         self.entry_examples = ctk.CTkEntry(self.frame_settings, width=50)
         self.entry_examples.grid(row=0, column=3, padx=5, pady=5)
-        self.entry_examples.insert(0, '20')
+        self.entry_examples.insert(0, '10')
 
         # Строка 2: Мин и Макс числа
         self.lbl_min = ctk.CTkLabel(self.frame_settings, text='Мин. число:')

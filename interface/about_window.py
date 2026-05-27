@@ -63,7 +63,9 @@ class AboutWindow(ctk.CTkToplevel):
         author_label.pack(pady=5, anchor="w")
 
         # Разделитель
-        separator = ctk.CTkFrame(self.scroll_frame, height=2, fg_color="gray30")
+        separator = ctk.CTkFrame(
+            self.scroll_frame, height=2, fg_color="gray30"
+        )
         separator.pack(fill="x", pady=15)
 
     def _add_instructions_section(self):
